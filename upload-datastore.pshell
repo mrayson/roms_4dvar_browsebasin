@@ -1,0 +1,39 @@
+#!/bin/bash --login
+#
+#SBATCH --account=pawsey0106
+#SBATCH --time=48:00:00
+#SBATCH --export=PYTHONPATH="/home/mrayson/code:$PYTHONPATH"
+#SBATCH --partition=copyq
+#SBATCH --ntasks=5
+#SBATCH --ntasks-per-node=5
+##SBATCH --partition=debugq
+#SBATCH --output=LOGS/copyjob-%j.out
+#SBATCH --nodes=1
+
+##############################
+# Download data using pstore:
+#
+#       https://support.pawsey.org.au/documentation/display/US/pshell+scripting+and+HPC
+##############################
+
+module load python
+
+STOREDIR=/projects
+PSHELL=~/pshell
+
+# Move everything in localfolder to <storefolder>/<outfolder>
+localfolder=$MYSCRATCH/ROMS
+storefolder=$STOREDIR/NWS_Ocean_Mod/
+outfolder=ROMS_BROWSE_4DVAR
+
+# wildcard does not work for folders...
+#$PSHELL "cd $storefolder && mkdir $outfolder && cd $outfolder && lcd $localfolder && put *"
+
+# Make the folder on the datastore
+#$PSHELL "cd $storefolder && mkdir $outfolder"
+$PSHELL "cd $storefolder && cd $storefolder/$outfolder && lcd $localfolder && put 4DVAR"
+$PSHELL "cd $storefolder && cd $storefolder/$outfolder && lcd $localfolder && put 4DVAR_OUT"
+$PSHELL "cd $storefolder && cd $storefolder/$outfolder && lcd $localfolder && put 4DVAR_STA"
+$PSHELL "cd $storefolder && cd $storefolder/$outfolder && lcd $localfolder && put SUNTANS_NESTING"
+
+
